@@ -1,6 +1,6 @@
 {
   "name": "custard",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "One app to rule all communication apps",
   "private": true,
   "author": {
@@ -23,20 +23,28 @@
   },
   "devDependencies": {
     "concurrently": "4.1.2",
-    "electron": "^11.1.0",
-    "electron-builder": "^21.2.0",
+    "electron": "^11.3.0",
+    "electron-builder": "^22.9.1",
+    "electron-notarize": "^1.0.0",
     "prettier": "^1.4.4",
     "react-scripts": "3.1.2",
     "wait-on": "3.3.0"
   },
   "build": {
-    "appId": "com.invidelabs.custard",
-    "mac": {
-      "identity": null,
-      "category": "public.app-category.productivity"
-    },
     "directories": {
       "buildResources": "build_assets"
+    },
+    "appId": "com.invidelabs.custard",
+    "afterSign": "scripts/notarize.js",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build_assets/entitlements.mac.plist",
+      "entitlementsInherit": "build_assets/entitlements.mac.plist"
+    },
+    "dmg": {
+      "sign": false
     }
   },
   "main": "build/electron.js",
