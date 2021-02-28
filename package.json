@@ -47,7 +47,7 @@
       "sign": false
     }
   },
-  "main": "build/electron.js",
+  "main": "public/electron.js",
   "homepage": "./",
   "scripts": {
     "start": "concurrently \"SET BROWSER=none&&npm run react-start\" \"wait-on http://localhost:3000 && electron .\"",
