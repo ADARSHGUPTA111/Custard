@@ -17,6 +17,24 @@ app.userAgentFallback = userAgent();
 // report.onExtendedProcessMetrics(app, { samplingInterval: 1000 })
 // .subscribe(report => console.log(report));
 
+//Force Single window
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+    app.quit()
+} else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+        // Someone tried to run a second instance, we should focus our window.
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore()
+            mainWindow.focus()
+        }
+    })
+
+    // Create myWindow, load the rest of the app, etc...
+    // app.whenReady().then(() => {})
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow(
     { 
@@ -33,7 +51,10 @@ function createWindow() {
       ? "http://localhost:3000"
       : `file://${path.join(__dirname, "../build/index.html")}`
   );
-  mainWindow.on("closed", () => (mainWindow = null));
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
+  require('./mainmenu');
 }
 
 app.on("ready", createWindow);
@@ -44,8 +65,12 @@ app.on("window-all-closed", () => {
   }
 });
 
-app.on("activate", () => {
-  if (mainWindow === null) {
-    createWindow();
+app.on('activate', () => {
+  // On OS X it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (mainWindow) {
+      mainWindow.show();
+  } else {
+      mainWindow = createMainWindow();
   }
 });
