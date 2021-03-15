@@ -1,6 +1,7 @@
 const electron = require("electron");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
+const globalShortcut = electron.globalShortcut;
 const userAgent = require("./userAgent");
 const path = require("path");
 const isDev = require("electron-is-dev");
@@ -53,11 +54,18 @@ function createWindow() {
   );
   mainWindow.on("closed", () => {
     mainWindow = null;
+    globalShortcut.unregisterAll();
   });
   require('./mainmenu');
 }
 
-app.on("ready", createWindow);
+// app.on("ready", createWindow);
+// when app is ready register a global shortcut
+// that calls createWindow function
+app.on('ready', () => {
+  createWindow();
+  globalShortcut.register('CommandOrControl+Shift+C', createWindow);
+})
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
