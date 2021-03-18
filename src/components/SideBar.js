@@ -72,7 +72,7 @@ export class SideBar extends Component {
               >
                 <img
                   src={`${eachLink.link}/favicon.ico`}
-                  alt={`${eachLink.label}`}
+                  alt={`../icons/invide.png`}
                   title={`${eachLink.label}`}
                   onError={e => {
                     e.target.onerror = null;

@@ -4,6 +4,9 @@ const BrowserWindow = electron.BrowserWindow;
 const userAgent = require("./userAgent");
 const path = require("path");
 const isDev = require("electron-is-dev");
+const { systemPreferences } = require('electron')
+const success =systemPreferences.getMediaAccessStatus("microphone");
+
 
 let mainWindow;
 
@@ -17,6 +20,28 @@ app.userAgentFallback = userAgent();
 // report.onExtendedProcessMetrics(app, { samplingInterval: 1000 })
 // .subscribe(report => console.log(report));
 
+function getMediaAccessStatus(){
+  try {
+    if (platform !== "darwin") {
+      return true;
+    }
+
+    const status =  systemPreferences.getMediaAccessStatus("microphone");
+    log.info("Current microphone access status:", status);
+
+    if (status === "not-determined") {
+      const success = systemPreferences.askForMediaAccess("microphone");
+      log.info("Result of microphone access:", success.valueOf() ? "granted" : "denied");
+      return success.valueOf();
+    }
+
+    return status === "granted";
+  } catch (error) {
+    log.error("Could not get microphone permission:", error.message);
+  }
+  return false;
+};
+
 function createWindow() {
   mainWindow = new BrowserWindow(
     { 
@@ -25,6 +50,7 @@ function createWindow() {
       webPreferences: { 
         nodeIntegration: false,
         webviewTag: true,
+        contextIsolation: true,
         nativeWindowOpen: true
       }
   });
