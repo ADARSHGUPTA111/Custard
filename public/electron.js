@@ -16,7 +16,7 @@ let mainWindow;
 // );
 
 //to fix google sign-up and whatsapp updated version
-app.userAgentFallback = userAgent();
+// app.userAgentFallback = userAgent();
 // report.onExtendedProcessMetrics(app, { samplingInterval: 1000 })
 // .subscribe(report => console.log(report));
 
@@ -62,7 +62,14 @@ function createWindow() {
   mainWindow.on("closed", () => (mainWindow = null));
 }
 
-app.on("ready", createWindow);
+app.on("ready", ()=> {
+  electron.session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+      details.requestHeaders["User-Agent"] = "Chrome";
+      callback({ cancel: false, requestHeaders: details.requestHeaders });
+  });
+
+  createWindow(); // your regular code to create root browser window
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
